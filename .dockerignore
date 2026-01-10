@@ -1,0 +1,29 @@
+# Binaries
+jwt-token-analyzer
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test files
+*_test.go
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Documentation (will be generated)
+docs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.log

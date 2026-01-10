@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  jwt-token-analyzer:
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      - GIN_MODE=release
+      - SERVER_PORT=8082
+      - ANALYZER_CHECK_EXPIRATION=true
+      - ANALYZER_MAX_TOKEN_LIFETIME=168
+      - ANALYZER_WARN_TOKEN_LIFETIME=24
+    restart: unless-stopped

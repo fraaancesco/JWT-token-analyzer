@@ -1,0 +1,294 @@
+basePath: /
+definitions:
+  handler.AnalyzeRequest:
+    properties:
+      check_expiration:
+        example: true
+        type: boolean
+      max_token_lifetime_hours:
+        example: 168
+        type: integer
+      tokens:
+        example:
+        - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        items:
+          type: string
+        minItems: 1
+        type: array
+      warn_token_lifetime_hours:
+        example: 24
+        type: integer
+    required:
+    - tokens
+    type: object
+  handler.DecodeRequest:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    required:
+    - token
+    type: object
+  handler.DecodeResponse:
+    properties:
+      error:
+        type: string
+      header:
+        $ref: '#/definitions/models.JWTHeader'
+      payload:
+        $ref: '#/definitions/models.DecodedPayload'
+      signature:
+        type: string
+      token:
+        type: string
+      token_info:
+        $ref: '#/definitions/models.TokenInfo'
+    type: object
+  models.AnalysisResult:
+    properties:
+      error:
+        type: string
+      header:
+        $ref: '#/definitions/models.JWTHeader'
+      is_valid:
+        type: boolean
+      payload:
+        $ref: '#/definitions/models.DecodedPayload'
+      security_issues:
+        items:
+          $ref: '#/definitions/models.SecurityIssue'
+        type: array
+      signature:
+        type: string
+      summary:
+        $ref: '#/definitions/models.AnalysisSummary'
+      token:
+        type: string
+      token_info:
+        $ref: '#/definitions/models.TokenInfo'
+    type: object
+  models.AnalysisSummary:
+    properties:
+      critical_count:
+        type: integer
+      high_count:
+        type: integer
+      info_count:
+        type: integer
+      low_count:
+        type: integer
+      medium_count:
+        type: integer
+      overall_rating:
+        type: string
+      security_score:
+        type: string
+      total_issues:
+        type: integer
+    type: object
+  models.DecodedPayload:
+    properties:
+      custom_claims:
+        additionalProperties: true
+        type: object
+      raw_claims:
+        additionalProperties: true
+        type: object
+      standard_claims:
+        $ref: '#/definitions/models.StandardClaims'
+    type: object
+  models.JWTHeader:
+    properties:
+      alg:
+        type: string
+      cty:
+        type: string
+      jku:
+        type: string
+      jwk:
+        type: string
+      kid:
+        type: string
+      typ:
+        type: string
+      x5c:
+        type: string
+      x5t:
+        type: string
+      x5u:
+        type: string
+    type: object
+  models.Report:
+    properties:
+      analysis_date:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/models.AnalysisResult'
+        type: array
+    type: object
+  models.SecurityIssue:
+    properties:
+      affected_field:
+        type: string
+      code:
+        type: string
+      description:
+        type: string
+      recommendation:
+        type: string
+      severity:
+        $ref: '#/definitions/models.Severity'
+      title:
+        type: string
+    type: object
+  models.Severity:
+    enum:
+    - critical
+    - high
+    - medium
+    - low
+    - info
+    - ok
+    type: string
+    x-enum-varnames:
+    - SeverityCritical
+    - SeverityHigh
+    - SeverityMedium
+    - SeverityLow
+    - SeverityInfo
+    - SeverityOK
+  models.StandardClaims:
+    properties:
+      aud:
+        type: string
+      exp:
+        type: integer
+      iat:
+        type: integer
+      iss:
+        type: string
+      jti:
+        type: string
+      nbf:
+        type: integer
+      sub:
+        type: string
+    type: object
+  models.TokenInfo:
+    properties:
+      expires_at:
+        type: string
+      has_signature:
+        type: boolean
+      is_expired:
+        type: boolean
+      is_not_yet_valid:
+        type: boolean
+      issued_at:
+        type: string
+      not_before:
+        type: string
+      parts_count:
+        type: integer
+      signature_present:
+        type: boolean
+      time_since_expiry:
+        type: string
+      time_until_expiry:
+        type: string
+      token_lifetime:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: A security analysis tool for JWT tokens. Analyzes JWT structure, claims,
+    and identifies potential security vulnerabilities.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: JWT Token Analyzer API
+  version: "1.0"
+paths:
+  /analyze:
+    post:
+      consumes:
+      - application/json
+      description: Analyzes one or more JWT tokens for security vulnerabilities and
+        best practices
+      parameters:
+      - description: JWT tokens to analyze
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AnalyzeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Analysis report
+          schema:
+            $ref: '#/definitions/models.Report'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Analyze JWT tokens
+      tags:
+      - analyze
+  /decode:
+    post:
+      consumes:
+      - application/json
+      description: Decodes a JWT token and returns its header, payload, and metadata
+        without security analysis
+      parameters:
+      - description: JWT token to decode
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.DecodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Decoded token
+          schema:
+            $ref: '#/definitions/handler.DecodeResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Decode a JWT token
+      tags:
+      - decode
+  /health:
+    get:
+      description: Returns the health status of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service is healthy
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - health
+schemes:
+- http
+- https
+swagger: "2.0"
