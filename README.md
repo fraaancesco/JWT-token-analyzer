@@ -238,6 +238,3 @@ jwt-token-analyzer/
 └── README.md
 ```
 
-## License
-
-Apache 2.0
