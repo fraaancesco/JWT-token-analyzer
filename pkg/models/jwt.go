@@ -4,15 +4,15 @@ import "time"
 
 // JWTHeader represents the decoded JWT header
 type JWTHeader struct {
-	Algorithm   string  `json:"alg"`
-	Type        string  `json:"typ,omitempty"`
-	KeyID       *string `json:"kid,omitempty"`
-	ContentType *string `json:"cty,omitempty"`
-	X5U         *string `json:"x5u,omitempty"`
-	X5C         *string `json:"x5c,omitempty"`
-	X5T         *string `json:"x5t,omitempty"`
-	JKU         *string `json:"jku,omitempty"`
-	JWK         *string `json:"jwk,omitempty"`
+	Algorithm   string         `json:"alg"`
+	Type        string         `json:"typ,omitempty"`
+	KeyID       *string        `json:"kid,omitempty"`
+	ContentType *string        `json:"cty,omitempty"`
+	X5U         *string        `json:"x5u,omitempty"`
+	X5C         []string       `json:"x5c,omitempty"`
+	X5T         *string        `json:"x5t,omitempty"`
+	JKU         *string        `json:"jku,omitempty"`
+	JWK         map[string]any `json:"jwk,omitempty" swaggertype:"object"`
 }
 
 // StandardClaims represents the standard JWT claims (RFC 7519)
@@ -28,9 +28,9 @@ type StandardClaims struct {
 
 // DecodedPayload represents the decoded JWT payload with standard and custom claims
 type DecodedPayload struct {
-	StandardClaims StandardClaims         `json:"standard_claims"`
-	CustomClaims   map[string]interface{} `json:"custom_claims,omitempty"`
-	RawClaims      map[string]interface{} `json:"raw_claims"`
+	StandardClaims StandardClaims `json:"standard_claims"`
+	CustomClaims   map[string]any `json:"custom_claims,omitempty"`
+	RawClaims      map[string]any `json:"raw_claims"`
 }
 
 // SecurityIssue represents a security vulnerability or concern found in the JWT
@@ -60,27 +60,27 @@ type TokenInfo struct {
 
 // AnalysisResult represents the complete analysis of a JWT token
 type AnalysisResult struct {
-	Token          string          `json:"token"`
-	IsValid        bool            `json:"is_valid"`
-	Error          *string         `json:"error,omitempty"`
-	Header         *JWTHeader      `json:"header,omitempty"`
-	Payload        *DecodedPayload `json:"payload,omitempty"`
-	Signature      string          `json:"signature,omitempty"`
-	TokenInfo      *TokenInfo      `json:"token_info,omitempty"`
-	SecurityIssues []SecurityIssue `json:"security_issues"`
+	Token          string           `json:"token"`
+	IsValid        bool             `json:"is_valid"`
+	Error          *string          `json:"error,omitempty"`
+	Header         *JWTHeader       `json:"header,omitempty"`
+	Payload        *DecodedPayload  `json:"payload,omitempty"`
+	Signature      string           `json:"signature,omitempty"`
+	TokenInfo      *TokenInfo       `json:"token_info,omitempty"`
+	SecurityIssues []SecurityIssue  `json:"security_issues"`
 	Summary        *AnalysisSummary `json:"summary,omitempty"`
 }
 
 // AnalysisSummary provides a summary of the security analysis
 type AnalysisSummary struct {
-	TotalIssues      int    `json:"total_issues"`
-	CriticalCount    int    `json:"critical_count"`
-	HighCount        int    `json:"high_count"`
-	MediumCount      int    `json:"medium_count"`
-	LowCount         int    `json:"low_count"`
-	InfoCount        int    `json:"info_count"`
-	SecurityScore    string `json:"security_score"`
-	OverallRating    string `json:"overall_rating"`
+	TotalIssues   int    `json:"total_issues"`
+	CriticalCount int    `json:"critical_count"`
+	HighCount     int    `json:"high_count"`
+	MediumCount   int    `json:"medium_count"`
+	LowCount      int    `json:"low_count"`
+	InfoCount     int    `json:"info_count"`
+	SecurityScore string `json:"security_score"`
+	OverallRating string `json:"overall_rating"`
 }
 
 // Report represents the complete analysis report

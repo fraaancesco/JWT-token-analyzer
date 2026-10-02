@@ -1,5 +1,6 @@
 # Binaries
-jwt-token-analyzer
+/jwt-token-analyzer
+/jwtscan
 *.exe
 *.dll
 *.so
@@ -28,3 +29,6 @@ Thumbs.db
 # Environment files
 .env
 .env.local
+
+# Scanner reports
+jwt-scan-raw.md

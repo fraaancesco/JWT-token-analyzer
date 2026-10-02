@@ -89,10 +89,10 @@ definitions:
   models.DecodedPayload:
     properties:
       custom_claims:
-        additionalProperties: true
+        additionalProperties: {}
         type: object
       raw_claims:
-        additionalProperties: true
+        additionalProperties: {}
         type: object
       standard_claims:
         $ref: '#/definitions/models.StandardClaims'
@@ -106,13 +106,15 @@ definitions:
       jku:
         type: string
       jwk:
-        type: string
+        type: object
       kid:
         type: string
       typ:
         type: string
       x5c:
-        type: string
+        items:
+          type: string
+        type: array
       x5t:
         type: string
       x5u:

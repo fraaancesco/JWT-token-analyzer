@@ -1,4 +1,4 @@
-.PHONY: build run swagger clean install-tools rebuild test
+.PHONY: build build-jwtscan run swagger clean install-tools rebuild test cover deps build-static docker-build docker-run
 
 # Binary name
 BINARY_NAME=jwt-token-analyzer
@@ -7,6 +7,11 @@ BINARY_NAME=jwt-token-analyzer
 build: swagger
 	@echo "Building $(BINARY_NAME)..."
 	go build -o $(BINARY_NAME) ./cmd/server
+
+# Build the project scanner CLI
+build-jwtscan:
+	@echo "Building jwtscan..."
+	go build -o jwtscan ./cmd/jwtscan
 
 # Run the application
 run: build
@@ -21,13 +26,12 @@ swagger:
 # Clean build artifacts
 clean:
 	@echo "Cleaning..."
-	rm -f $(BINARY_NAME)
-	rm -rf docs/
+	rm -f $(BINARY_NAME) jwtscan coverage.out
 
 # Install development tools
 install-tools:
 	@echo "Installing tools..."
-	go install github.com/swaggo/swag/cmd/swag@latest
+	go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
 # Rebuild from scratch
 rebuild: clean build
@@ -36,6 +40,13 @@ rebuild: clean build
 test:
 	@echo "Running tests..."
 	go test -v ./...
+
+# Run tests with coverage and fail if it is below 100%
+cover:
+	@echo "Running tests with coverage..."
+	go test -count=1 -coverpkg=./... -coverprofile=coverage.out ./...
+	@go tool cover -func=coverage.out | tail -1
+	@go tool cover -func=coverage.out | tail -1 | grep -q '100.0%' || (echo "Coverage is below 100%" && exit 1)
 
 # Download dependencies
 deps:

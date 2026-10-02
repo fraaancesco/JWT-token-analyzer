@@ -267,11 +267,11 @@
             "properties": {
                 "custom_claims": {
                     "type": "object",
-                    "additionalProperties": true
+                    "additionalProperties": {}
                 },
                 "raw_claims": {
                     "type": "object",
-                    "additionalProperties": true
+                    "additionalProperties": {}
                 },
                 "standard_claims": {
                     "$ref": "#/definitions/models.StandardClaims"
@@ -291,7 +291,7 @@
                     "type": "string"
                 },
                 "jwk": {
-                    "type": "string"
+                    "type": "object"
                 },
                 "kid": {
                     "type": "string"
@@ -300,7 +300,10 @@
                     "type": "string"
                 },
                 "x5c": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "x5t": {
                     "type": "string"

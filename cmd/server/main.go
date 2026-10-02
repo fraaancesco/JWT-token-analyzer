@@ -3,13 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/fraaancois/jwt-token-analyzer/internal/config"
-	"github.com/fraaancois/jwt-token-analyzer/internal/handler"
+	"github.com/fraaancesco/jwt-token-analyzer/internal/config"
+	"github.com/fraaancesco/jwt-token-analyzer/internal/handler"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "github.com/fraaancois/jwt-token-analyzer/docs"
+	_ "github.com/fraaancesco/jwt-token-analyzer/docs"
 )
 
 // @title JWT Token Analyzer API
@@ -28,17 +28,37 @@ import (
 // @BasePath /
 // @schemes http https
 
-func main() {
-	// Load configuration
-	cfg := config.Load()
+// runServer and logFatalf are variables so tests can replace them.
+var (
+	runServer = func(r *gin.Engine, addr string) error { return r.Run(addr) }
+	logFatalf = log.Fatalf
+)
 
+func main() {
+	if err := run(config.Load()); err != nil {
+		logFatalf("Failed to start server: %v", err)
+	}
+}
+
+// run configures the router and starts the HTTP server.
+func run(cfg *config.Config) error {
 	// Set Gin mode
 	gin.SetMode(cfg.Server.GinMode)
 
-	// Create router
+	router := newRouter()
+
+	// Start server
+	addr := ":" + cfg.Server.Port
+	log.Printf("Starting JWT Token Analyzer on %s", addr)
+	log.Printf("Swagger UI available at http://localhost%s/swagger/index.html", addr)
+
+	return runServer(router, addr)
+}
+
+// newRouter creates the router with all the API routes registered.
+func newRouter() *gin.Engine {
 	router := gin.Default()
 
-	// Create handler
 	h := handler.NewAnalyzeHandler()
 
 	// Register routes
@@ -49,12 +69,5 @@ func main() {
 	// Swagger documentation
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// Start server
-	addr := ":" + cfg.Server.Port
-	log.Printf("Starting JWT Token Analyzer on %s", addr)
-	log.Printf("Swagger UI available at http://localhost%s/swagger/index.html", addr)
-
-	if err := router.Run(addr); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+	return router
 }

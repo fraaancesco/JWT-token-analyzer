@@ -269,11 +269,11 @@ const docTemplate = `{
             "properties": {
                 "custom_claims": {
                     "type": "object",
-                    "additionalProperties": true
+                    "additionalProperties": {}
                 },
                 "raw_claims": {
                     "type": "object",
-                    "additionalProperties": true
+                    "additionalProperties": {}
                 },
                 "standard_claims": {
                     "$ref": "#/definitions/models.StandardClaims"
@@ -293,7 +293,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "jwk": {
-                    "type": "string"
+                    "type": "object"
                 },
                 "kid": {
                     "type": "string"
@@ -302,7 +302,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "x5c": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "x5t": {
                     "type": "string"

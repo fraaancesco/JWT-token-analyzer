@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/fraaancois/jwt-token-analyzer/internal/analyzer"
-	"github.com/fraaancois/jwt-token-analyzer/pkg/models"
+	"github.com/fraaancesco/jwt-token-analyzer/internal/analyzer"
+	"github.com/fraaancesco/jwt-token-analyzer/pkg/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -81,12 +81,12 @@ type DecodeRequest struct {
 
 // DecodeResponse represents the decoded JWT without security analysis
 type DecodeResponse struct {
-	Token     string                  `json:"token"`
-	Header    *models.JWTHeader       `json:"header,omitempty"`
-	Payload   *models.DecodedPayload  `json:"payload,omitempty"`
-	Signature string                  `json:"signature,omitempty"`
-	TokenInfo *models.TokenInfo       `json:"token_info,omitempty"`
-	Error     *string                 `json:"error,omitempty"`
+	Token     string                 `json:"token"`
+	Header    *models.JWTHeader      `json:"header,omitempty"`
+	Payload   *models.DecodedPayload `json:"payload,omitempty"`
+	Signature string                 `json:"signature,omitempty"`
+	TokenInfo *models.TokenInfo      `json:"token_info,omitempty"`
+	Error     *string                `json:"error,omitempty"`
 }
 
 // Decode godoc

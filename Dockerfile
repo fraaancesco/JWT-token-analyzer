@@ -1,11 +1,11 @@
 # Build stage
-FROM golang:1.23-alpine AS builder
+FROM golang:1.27-alpine3.24 AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git
 
 # Install swag for Swagger documentation
-RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN swag init -g cmd/server/main.go -o docs
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o jwt-token-analyzer ./cmd/server
 
 # Runtime stage
-FROM alpine:3.19
+FROM alpine:3.24
 
 # Install ca-certificates for HTTPS
 RUN apk --no-cache add ca-certificates

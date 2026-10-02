@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fraaancois/jwt-token-analyzer/pkg/models"
+	"github.com/fraaancesco/jwt-token-analyzer/pkg/models"
 )
 
 // Options contains configuration for the JWT analyzer
@@ -24,8 +24,8 @@ type Options struct {
 func DefaultOptions() Options {
 	return Options{
 		CheckExpiration:    true,
-		MaxTokenLifetime:   7 * 24 * time.Hour,  // 7 days
-		WarnTokenLifetime:  24 * time.Hour,      // 24 hours
+		MaxTokenLifetime:   7 * 24 * time.Hour, // 7 days
+		WarnTokenLifetime:  24 * time.Hour,     // 24 hours
 		AllowNoneAlgorithm: false,
 		SensitiveFields: []string{
 			"password", "passwd", "pwd", "secret", "token",
@@ -133,13 +133,13 @@ func decodeHeader(encoded string) (*models.JWTHeader, []models.SecurityIssue, er
 	if header.JKU != nil && *header.JKU != "" {
 		issues = append(issues, createIssue("JKU_PRESENT", "jku"))
 	}
-	if header.JWK != nil && *header.JWK != "" {
+	if len(header.JWK) > 0 {
 		issues = append(issues, createIssue("JWK_EMBEDDED", "jwk"))
 	}
 	if header.X5U != nil && *header.X5U != "" {
 		issues = append(issues, createIssue("X5U_PRESENT", "x5u"))
 	}
-	if header.X5C != nil && *header.X5C != "" {
+	if len(header.X5C) > 0 {
 		issues = append(issues, createIssue("X5C_PRESENT", "x5c"))
 	}
 
@@ -161,14 +161,14 @@ func decodePayload(encoded string, opts Options) (*models.DecodedPayload, []mode
 		return nil, nil, fmt.Errorf("base64 decode failed: %w", err)
 	}
 
-	var rawClaims map[string]interface{}
+	var rawClaims map[string]any
 	if err := json.Unmarshal(decoded, &rawClaims); err != nil {
 		return nil, nil, fmt.Errorf("JSON unmarshal failed: %w", err)
 	}
 
 	payload := &models.DecodedPayload{
 		RawClaims:    rawClaims,
-		CustomClaims: make(map[string]interface{}),
+		CustomClaims: make(map[string]any),
 	}
 
 	// Extract standard claims
@@ -198,7 +198,7 @@ func decodePayload(encoded string, opts Options) (*models.DecodedPayload, []mode
 
 	if aud, ok := rawClaims["aud"].(string); ok {
 		payload.StandardClaims.Audience = &aud
-	} else if _, ok := rawClaims["aud"].([]interface{}); ok {
+	} else if _, ok := rawClaims["aud"].([]any); ok {
 		// Audience can also be an array
 		audStr := "array"
 		payload.StandardClaims.Audience = &audStr
@@ -348,7 +348,7 @@ func checkExpiration(payload *models.DecodedPayload, tokenInfo *models.TokenInfo
 	return issues
 }
 
-func checkSensitiveData(claims map[string]interface{}, sensitiveFields []string) []models.SecurityIssue {
+func checkSensitiveData(claims map[string]any, sensitiveFields []string) []models.SecurityIssue {
 	var issues []models.SecurityIssue
 
 	for key := range claims {
@@ -455,11 +455,11 @@ func base64URLDecode(encoded string) ([]byte, error) {
 func containsSuspiciousChars(s string) bool {
 	// Check for SQL injection, path traversal, or command injection patterns
 	patterns := []string{
-		`['";]`,           // SQL injection
-		`\.\./`,           // Path traversal
-		`[|&;$]`,          // Command injection
-		`<[^>]*>`,         // HTML/XML injection
-		`\x00`,            // Null byte
+		`['";]`,   // SQL injection
+		`\.\./`,   // Path traversal
+		`[|&;$]`,  // Command injection
+		`<[^>]*>`, // HTML/XML injection
+		`\x00`,    // Null byte
 	}
 
 	for _, pattern := range patterns {
